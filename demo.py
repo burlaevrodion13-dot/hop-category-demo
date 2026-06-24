@@ -1,4 +1,4 @@
-import os, json
+import os, json, re
 from dotenv import load_dotenv
 from openai import OpenAI
 
