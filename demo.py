@@ -75,7 +75,7 @@ for ad in ADS:
     if ad["text"] == "ВСТАВЬ ТЕКСТ":
         continue  # незаполненные пропускаем
     res = classify(ad["text"])
-    got = res.get("category", "?")
+    got = res.get("category", "?").split(":")[0].strip()
     conf = res.get("confidence", 0)
     ok = got == ad["true"]
     correct += ok
