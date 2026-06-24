@@ -5,25 +5,28 @@
 <title>Демо: автоопределение категорий hop.uz</title>
 <style>
   body { font-family: system-ui, Arial, sans-serif; background:#f5f6f8; color:#1c1c1c; padding:32px; }
-  .card { max-width:820px; margin:0 auto; background:#fff; border:1px solid #e3e6ea; border-radius:12px; padding:28px 32px; }
+  .card { max-width:1000px; margin:0 auto; background:#fff; border:1px solid #e3e6ea; border-radius:12px; padding:28px 32px; }
   h1 { font-size:22px; margin:0 0 4px; }
-  .sub { color:#5a6472; font-size:14px; margin-bottom:20px; }
+  .sub { color:#5a6472; font-size:14px; margin-bottom:8px; }
+  .meta { color:#8a909a; font-size:12px; margin-bottom:20px; }
   .summary { font-size:18px; font-weight:700; margin:16px 0; }
   .note { background:#eef4ff; border-left:4px solid #2563d9; padding:12px 16px; border-radius:6px; font-size:14px; margin:16px 0; }
   table { border-collapse:collapse; width:100%; font-size:14px; margin-top:8px; }
-  th, td { border:1px solid #e3e6ea; padding:9px 12px; text-align:left; }
+  th, td { border:1px solid #e3e6ea; padding:9px 12px; text-align:left; vertical-align:top; }
   th { background:#f0f2f5; font-weight:600; }
+  code { font-family: ui-monospace, Consolas, monospace; }
 </style>
 </head>
 <body>
   <div class="card">
     <h1>Автоопределение категорий, демо на ваших объявлениях</h1>
     <div class="sub">Реальные тексты с hop.uz, русские и узбекские. Без донастройки под полный список категорий.</div>
+    <div class="meta">Модель: gpt-4o-mini · прогон: 24.06.2026 15:18 · объявлений: 12</div>
     <div class="summary">Верно определено: 10 из 12 (83%)</div>
-    <div class="note">Двуязычность работает: одно и то же объявление на русском и узбекском (№11 и №12) классифицируется одинаково. Две неоднозначные строки (походы в горы) сайт относит к «Услуги», модель к «Туризм»: по смыслу подходят оба, такие случаи настраиваются простыми правилами.</div>
+    <div class="note">Двуязычность работает: одно и то же объявление на русском и узбекском (№11 и №12) классифицируется одинаково. Две неоднозначные строки (походы в горы) сайт относит к «Услуги», модель к «Туризм»: по смыслу подходят оба, такие случаи настраиваются простыми правилами. В последней колонке, сырой ответ модели в формате JSON, как он пришёл от GPT.</div>
     <table>
       <tr>
-        <th>№</th><th>Язык</th><th>Категория (GPT)</th><th>Настоящая категория</th><th>Совпало</th><th>Уверенность</th>
+        <th>№</th><th>Язык</th><th>Категория (GPT)</th><th>Настоящая</th><th>Совпало</th><th>Увер.</th><th>Сырой ответ модели</th>
       </tr>
       <tr>
             <td>1</td>
@@ -32,6 +35,7 @@
             <td>Недвижимость</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
             <td style="text-align:center">0.95</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Недвижимость&quot;, &quot;confidence&quot;: 0.95}</code></td>
         </tr><tr>
             <td>2</td>
             <td>рус</td>
@@ -39,6 +43,7 @@
             <td>Услуги</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
             <td style="text-align:center">0.95</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Услуги&quot;, &quot;confidence&quot;: 0.95}</code></td>
         </tr><tr>
             <td>3</td>
             <td>рус</td>
@@ -46,6 +51,7 @@
             <td>Транспорт</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
             <td style="text-align:center">0.95</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Транспорт&quot;, &quot;confidence&quot;: 0.95}</code></td>
         </tr><tr>
             <td>4</td>
             <td>узб</td>
@@ -53,6 +59,7 @@
             <td>Транспорт</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
             <td style="text-align:center">0.95</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Транспорт&quot;, &quot;confidence&quot;: 0.95}</code></td>
         </tr><tr>
             <td>5</td>
             <td>рус</td>
@@ -60,6 +67,7 @@
             <td>Туризм/отдых/спорт/хобби</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
             <td style="text-align:center">0.9</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Туризм/отдых/спорт/хобби&quot;, &quot;confidence&quot;: 0.9}</code></td>
         </tr><tr>
             <td>6</td>
             <td>рус</td>
@@ -67,6 +75,7 @@
             <td>Дом/сад/дача</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
             <td style="text-align:center">0.9</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Дом/сад/дача&quot;, &quot;confidence&quot;: 0.9}</code></td>
         </tr><tr>
             <td>7</td>
             <td>рус</td>
@@ -74,6 +83,7 @@
             <td>Электроника</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
             <td style="text-align:center">0.9</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Электроника&quot;, &quot;confidence&quot;: 0.9}</code></td>
         </tr><tr>
             <td>8</td>
             <td>рус</td>
@@ -81,6 +91,7 @@
             <td>Мода и стиль</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
             <td style="text-align:center">0.95</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Мода и стиль&quot;, &quot;confidence&quot;: 0.95}</code></td>
         </tr><tr>
             <td>9</td>
             <td>рус</td>
@@ -88,20 +99,23 @@
             <td>Мода и стиль</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
             <td style="text-align:center">0.95</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Мода и стиль&quot;, &quot;confidence&quot;: 0.95}</code></td>
         </tr><tr>
             <td>10</td>
             <td>рус</td>
             <td>Транспорт</td>
             <td>Транспорт</td>
             <td style="color:#1a7f37;background:#e6f4ea;font-weight:600;text-align:center">да</td>
-            <td style="text-align:center">0.9</td>
+            <td style="text-align:center">0.95</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Транспорт&quot;, &quot;confidence&quot;: 0.95}</code></td>
         </tr><tr>
             <td>11</td>
             <td>рус</td>
             <td>Туризм/отдых/спорт/хобби</td>
             <td>Услуги</td>
             <td style="color:#b3261e;background:#fce8e6;font-weight:600;text-align:center">НЕТ</td>
-            <td style="text-align:center">0.9</td>
+            <td style="text-align:center">0.95</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Туризм/отдых/спорт/хобби&quot;, &quot;confidence&quot;: 0.95}</code></td>
         </tr><tr>
             <td>12</td>
             <td>узб</td>
@@ -109,6 +123,7 @@
             <td>Услуги</td>
             <td style="color:#b3261e;background:#fce8e6;font-weight:600;text-align:center">НЕТ</td>
             <td style="text-align:center">0.9</td>
+            <td><code style="font-size:12px;color:#444">{&quot;category&quot;: &quot;Туризм/отдых/спорт/хобби&quot;, &quot;confidence&quot;: 0.9}</code></td>
         </tr>
     </table>
   </div>

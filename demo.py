@@ -67,7 +67,9 @@ def classify(text):
     if start != -1 and end != -1:
         raw = raw[start:end + 1]
 
-    return json.loads(raw)
+    parsed = json.loads(raw)
+    parsed["_raw"] = raw  # сохраняем сырой ответ модели
+    return parsed
 
 correct = 0
 rows = []
@@ -79,7 +81,8 @@ for ad in ADS:
     conf = res.get("confidence", 0)
     ok = got == ad["true"]
     correct += ok
-    rows.append((ad["id"], ad["lang"], got, ad["true"], "да" if ok else "НЕТ", conf))
+    raw = res.get("_raw", "")
+    rows.append((ad["id"], ad["lang"], got, ad["true"], "да" if ok else "НЕТ", conf, raw))
 
 print(f"\n{'#':<3}{'яз':<4}{'GPT':<26}{'настоящая':<26}{'ок':<5}увер")
 print("-" * 75)
@@ -89,12 +92,15 @@ if rows:
     print("-" * 75)
     print(f"Точность: {correct} из {len(rows)} ({correct / len(rows) * 100:.0f}%)")
 def save_html(rows, correct, total):
+    import html as _html
+    from datetime import datetime
     lang_map = {"ru": "рус", "uz": "узб"}
     trs = ""
     for r in rows:
-        num, lang, got, true, ok, conf = r
+        num, lang, got, true, ok, conf, raw = r
         ok_color = "#1a7f37" if ok == "да" else "#b3261e"
         ok_bg = "#e6f4ea" if ok == "да" else "#fce8e6"
+        raw_safe = _html.escape(raw)
         trs += f"""<tr>
             <td>{num}</td>
             <td>{lang_map.get(lang, lang)}</td>
@@ -102,9 +108,11 @@ def save_html(rows, correct, total):
             <td>{true}</td>
             <td style="color:{ok_color};background:{ok_bg};font-weight:600;text-align:center">{ok}</td>
             <td style="text-align:center">{conf}</td>
+            <td><code style="font-size:12px;color:#444">{raw_safe}</code></td>
         </tr>"""
 
     percent = round(correct / total * 100) if total else 0
+    now = datetime.now().strftime("%d.%m.%Y %H:%M")
     html = f"""<!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -112,25 +120,28 @@ def save_html(rows, correct, total):
 <title>Демо: автоопределение категорий hop.uz</title>
 <style>
   body {{ font-family: system-ui, Arial, sans-serif; background:#f5f6f8; color:#1c1c1c; padding:32px; }}
-  .card {{ max-width:820px; margin:0 auto; background:#fff; border:1px solid #e3e6ea; border-radius:12px; padding:28px 32px; }}
+  .card {{ max-width:1000px; margin:0 auto; background:#fff; border:1px solid #e3e6ea; border-radius:12px; padding:28px 32px; }}
   h1 {{ font-size:22px; margin:0 0 4px; }}
-  .sub {{ color:#5a6472; font-size:14px; margin-bottom:20px; }}
+  .sub {{ color:#5a6472; font-size:14px; margin-bottom:8px; }}
+  .meta {{ color:#8a909a; font-size:12px; margin-bottom:20px; }}
   .summary {{ font-size:18px; font-weight:700; margin:16px 0; }}
   .note {{ background:#eef4ff; border-left:4px solid #2563d9; padding:12px 16px; border-radius:6px; font-size:14px; margin:16px 0; }}
   table {{ border-collapse:collapse; width:100%; font-size:14px; margin-top:8px; }}
-  th, td {{ border:1px solid #e3e6ea; padding:9px 12px; text-align:left; }}
+  th, td {{ border:1px solid #e3e6ea; padding:9px 12px; text-align:left; vertical-align:top; }}
   th {{ background:#f0f2f5; font-weight:600; }}
+  code {{ font-family: ui-monospace, Consolas, monospace; }}
 </style>
 </head>
 <body>
   <div class="card">
     <h1>Автоопределение категорий, демо на ваших объявлениях</h1>
     <div class="sub">Реальные тексты с hop.uz, русские и узбекские. Без донастройки под полный список категорий.</div>
+    <div class="meta">Модель: gpt-4o-mini · прогон: {now} · объявлений: {total}</div>
     <div class="summary">Верно определено: {correct} из {total} ({percent}%)</div>
-    <div class="note">Двуязычность работает: одно и то же объявление на русском и узбекском (№11 и №12) классифицируется одинаково. Две неоднозначные строки (походы в горы) сайт относит к «Услуги», модель к «Туризм»: по смыслу подходят оба, такие случаи настраиваются простыми правилами.</div>
+    <div class="note">Двуязычность работает: одно и то же объявление на русском и узбекском (№11 и №12) классифицируется одинаково. Две неоднозначные строки (походы в горы) сайт относит к «Услуги», модель к «Туризм»: по смыслу подходят оба, такие случаи настраиваются простыми правилами. В последней колонке, сырой ответ модели в формате JSON, как он пришёл от GPT.</div>
     <table>
       <tr>
-        <th>№</th><th>Язык</th><th>Категория (GPT)</th><th>Настоящая категория</th><th>Совпало</th><th>Уверенность</th>
+        <th>№</th><th>Язык</th><th>Категория (GPT)</th><th>Настоящая</th><th>Совпало</th><th>Увер.</th><th>Сырой ответ модели</th>
       </tr>
       {trs}
     </table>
