@@ -38,22 +38,36 @@ ADS = [
 
 hints = "\n".join(f"- {c}: {h}" for c, h in CATEGORIES.items())
 
+import re
+
 def classify(text):
     prompt = (
         "Ты классификатор объявлений доски объявлений. "
         "Определи ОДНУ категорию из списка для объявления.\n\n"
         f"Категории:\n{hints}\n\n"
         f"Объявление:\n{text}\n\n"
-        'Верни строго JSON: {"category": "<одна из категорий точь-в-точь>", '
+        'Верни ТОЛЬКО JSON без пояснений и без markdown, строго вида: '
+        '{"category": "<ТОЧНОЕ название категории из списка, БЕЗ описания и без двоеточия>", '
         '"confidence": <число от 0 до 1>}.'
     )
     resp = client.chat.completions.create(
         model="gpt-4o-mini",
         temperature=0,
-        response_format={"type": "json_object"},
         messages=[{"role": "user", "content": prompt}],
     )
-    return json.loads(resp.choices[0].message.content)
+    raw = resp.choices[0].message.content.strip()
+
+    # убираем возможную обёртку ```json ... ```
+    raw = re.sub(r"^```(json)?", "", raw).strip()
+    raw = re.sub(r"```$", "", raw).strip()
+
+    # на всякий случай вытаскиваем JSON между первой { и последней }
+    start = raw.find("{")
+    end = raw.rfind("}")
+    if start != -1 and end != -1:
+        raw = raw[start:end + 1]
+
+    return json.loads(raw)
 
 correct = 0
 rows = []
