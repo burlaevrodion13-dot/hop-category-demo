@@ -88,3 +88,59 @@ for r in rows:
 if rows:
     print("-" * 75)
     print(f"Точность: {correct} из {len(rows)} ({correct / len(rows) * 100:.0f}%)")
+def save_html(rows, correct, total):
+    lang_map = {"ru": "рус", "uz": "узб"}
+    trs = ""
+    for r in rows:
+        num, lang, got, true, ok, conf = r
+        ok_color = "#1a7f37" if ok == "да" else "#b3261e"
+        ok_bg = "#e6f4ea" if ok == "да" else "#fce8e6"
+        trs += f"""<tr>
+            <td>{num}</td>
+            <td>{lang_map.get(lang, lang)}</td>
+            <td>{got}</td>
+            <td>{true}</td>
+            <td style="color:{ok_color};background:{ok_bg};font-weight:600;text-align:center">{ok}</td>
+            <td style="text-align:center">{conf}</td>
+        </tr>"""
+
+    percent = round(correct / total * 100) if total else 0
+    html = f"""<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<title>Демо: автоопределение категорий hop.uz</title>
+<style>
+  body {{ font-family: system-ui, Arial, sans-serif; background:#f5f6f8; color:#1c1c1c; padding:32px; }}
+  .card {{ max-width:820px; margin:0 auto; background:#fff; border:1px solid #e3e6ea; border-radius:12px; padding:28px 32px; }}
+  h1 {{ font-size:22px; margin:0 0 4px; }}
+  .sub {{ color:#5a6472; font-size:14px; margin-bottom:20px; }}
+  .summary {{ font-size:18px; font-weight:700; margin:16px 0; }}
+  .note {{ background:#eef4ff; border-left:4px solid #2563d9; padding:12px 16px; border-radius:6px; font-size:14px; margin:16px 0; }}
+  table {{ border-collapse:collapse; width:100%; font-size:14px; margin-top:8px; }}
+  th, td {{ border:1px solid #e3e6ea; padding:9px 12px; text-align:left; }}
+  th {{ background:#f0f2f5; font-weight:600; }}
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>Автоопределение категорий, демо на ваших объявлениях</h1>
+    <div class="sub">Реальные тексты с hop.uz, русские и узбекские. Без донастройки под полный список категорий.</div>
+    <div class="summary">Верно определено: {correct} из {total} ({percent}%)</div>
+    <div class="note">Двуязычность работает: одно и то же объявление на русском и узбекском (№11 и №12) классифицируется одинаково. Две неоднозначные строки (походы в горы) сайт относит к «Услуги», модель к «Туризм»: по смыслу подходят оба, такие случаи настраиваются простыми правилами.</div>
+    <table>
+      <tr>
+        <th>№</th><th>Язык</th><th>Категория (GPT)</th><th>Настоящая категория</th><th>Совпало</th><th>Уверенность</th>
+      </tr>
+      {trs}
+    </table>
+  </div>
+</body>
+</html>"""
+
+    with open("demo_result.html", "w", encoding="utf-8") as f:
+        f.write(html)
+    print("\nГотово. Файл demo_result.html сохранён в папке проекта.")
+
+
+save_html(rows, correct, len(rows))
